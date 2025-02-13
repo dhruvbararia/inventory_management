@@ -10,7 +10,7 @@ async function connectDB() {
       password: process.env.password,
       database: "defaultdb",
       ssl: {
-        ca: process.env.ca, // Provide the correct path to CA.pem
+        ca: fs.readFileSync("./ca.pem"), // Provide the correct path to CA.pem
       },
     });
 
