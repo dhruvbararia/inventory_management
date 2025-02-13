@@ -10,7 +10,7 @@ async function connectDB() {
       password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
-        ca: fs.readFileSync("./ca.pem"), // Provide the correct path to CA.pem
+        ca: fs.readFileSync(__dirname + '/ca.pem'), // Provide the correct path to CA.pem
       },
     });
     const db = await mysql.createConnection({
