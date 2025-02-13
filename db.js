@@ -1,6 +1,8 @@
 const mysql = require("mysql2/promise"); // ✅ Use mysql2/promise
 const fs = require("fs");
 
+const caPath = path.join(process.cwd(), "certs", "ca.pem");
+
 async function connectDB() {
   try {
     console.log({
@@ -10,7 +12,7 @@ async function connectDB() {
       password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
-        ca: fs.readFileSync(__dirname + '/ca.pem'), // Provide the correct path to CA.pem
+        ca: fs.readFileSync(caPath), // Provide the correct path to CA.pem
       },
     });
     const db = await mysql.createConnection({
@@ -20,7 +22,7 @@ async function connectDB() {
       password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
-        ca: fs.readFileSync("./ca.pem"), // Provide the correct path to CA.pem
+        ca: fs.readFileSync(caPath), // Provide the correct path to CA.pem
       },
     });
 
