@@ -1,5 +1,6 @@
 const mysql = require("mysql2/promise"); // ✅ Use mysql2/promise
 const fs = require("fs");
+const path = require("path");
 
 const caPath = path.join(process.cwd(), "certs", "ca.pem");
 
