@@ -7,7 +7,7 @@ const connectDB = require("./db");
 const app = express();
 app.use(express.json());
 app.use(cors());
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 80;
 
 async function startServer() {
   const db = await connectDB();
