@@ -7,6 +7,7 @@ const connectDB = require("./db");
 const app = express();
 app.use(express.json());
 app.use(cors());
+const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   const db = await connectDB();
@@ -174,20 +175,23 @@ async function startServer() {
   app.put("/inventory/:id/refill", async (req, res) => {
     const { id } = req.params;
     const { quantity } = req.body;
-  
+
     if (!quantity || quantity <= 0) {
       return res.status(400).json({ error: "Invalid quantity" });
     }
-  
+
     try {
-      await db.query("UPDATE inventory SET quantity = quantity + ? WHERE id = ?", [quantity, id]);
-  
+      await db.query(
+        "UPDATE inventory SET quantity = quantity + ? WHERE id = ?",
+        [quantity, id]
+      );
+
       // Insert into inventory_transactions table
       await db.query(
         "INSERT INTO inventory_transactions (inventory_id, transaction_type, quantity) VALUES (?, 'refill', ?)",
         [id, quantity]
       );
-  
+
       res.json({ message: "Inventory refilled successfully" });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -197,36 +201,40 @@ async function startServer() {
   app.put("/inventory/:id/deduct", async (req, res) => {
     const { id } = req.params;
     const { quantity } = req.body;
-  
+
     if (!quantity || quantity <= 0) {
       return res.status(400).json({ error: "Invalid quantity" });
     }
-  
+
     try {
       // Ensure we don't go negative
-      const [item] = await db.query("SELECT quantity FROM inventory WHERE id = ?", [id]);
+      const [item] = await db.query(
+        "SELECT quantity FROM inventory WHERE id = ?",
+        [id]
+      );
       if (item[0].quantity < quantity) {
         return res.status(400).json({ error: "Not enough stock available" });
       }
-  
-      await db.query("UPDATE inventory SET quantity = quantity - ? WHERE id = ?", [quantity, id]);
-  
+
+      await db.query(
+        "UPDATE inventory SET quantity = quantity - ? WHERE id = ?",
+        [quantity, id]
+      );
+
       // Insert into inventory_transactions table
       await db.query(
         "INSERT INTO inventory_transactions (inventory_id, transaction_type, quantity) VALUES (?, 'deduct', ?)",
         [id, quantity]
       );
-  
+
       res.json({ message: "Inventory deducted successfully" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   });
-  
-  
-  
+
   // Start server
-  app.listen(5000, () => {
+  app.listen(PORT, () => {
     console.log("Server running on port 5000");
   });
 }
