@@ -7,7 +7,7 @@ async function connectDB() {
       host: "mysql-inventory-dhruv-f140.h.aivencloud.com",
       port: 20050,
       user: "avnadmin",
-      password: process.env.password,
+      password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
         ca: fs.readFileSync("./ca.pem"), // Provide the correct path to CA.pem
