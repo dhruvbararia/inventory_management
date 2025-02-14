@@ -23,8 +23,11 @@ async function connectDB() {
       password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
-        rejectUnauthorized: true, // Enable SSL
+        ca: fs.readFileSync(caPath),
       },
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
     });
 
     console.log("✅ MySQL Connected!");
