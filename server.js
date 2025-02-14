@@ -16,21 +16,31 @@ const PORT = process.env.PORT || 80;
 
 async function startServer() {
   const db = await connectDB();
-  if (req.method === "OPTIONS") {
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      "https://inventory-management-frontend-gamma-nine.vercel.app"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PUT, DELETE, OPTIONS"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
-    return res.status(200).end();
-  }
+  // if (req.method === "OPTIONS") {
+  //   res.setHeader(
+  //     "Access-Control-Allow-Origin",
+  //     "https://inventory-management-frontend-gamma-nine.vercel.app"
+  //   );
+  //   res.setHeader(
+  //     "Access-Control-Allow-Methods",
+  //     "GET, POST, PUT, DELETE, OPTIONS"
+  //   );
+  //   res.setHeader(
+  //     "Access-Control-Allow-Headers",
+  //     "Content-Type, Authorization"
+  //   );
+  //   return res.status(200).end();
+  // }
+
+  app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", "https://inventory-management-frontend-gamma-nine.vercel.app");
+      res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      return res.status(200).end();
+    }
+    next();
+  });
   app.get("/users", async (req, res) => {
     try {
       const users = await db.query("SELECT * FROM users");
@@ -96,16 +106,29 @@ async function startServer() {
     }
   });
 
-  app.post("/items", (req, res) => {
+  // app.post("/items", (req, res) => {
+  //   const { name, quantity, reorder_level } = req.body;
+  //   db.query(
+  //     "INSERT INTO inventory (name, quantity, reorder_level) VALUES (?, ?, ?)",
+  //     [name, quantity, reorder_level],
+  //     (err, result) => {
+  //       if (err) throw err;
+  //       res.json({ message: "Item added", id: result.insertId });
+  //     }
+  //   );
+  // });
+
+  app.post("/items", async (req, res) => {
     const { name, quantity, reorder_level } = req.body;
-    db.query(
-      "INSERT INTO inventory (name, quantity, reorder_level) VALUES (?, ?, ?)",
-      [name, quantity, reorder_level],
-      (err, result) => {
-        if (err) throw err;
-        res.json({ message: "Item added", id: result.insertId });
-      }
-    );
+    try {
+      const [result] = await db.query(
+        "INSERT INTO inventory (name, quantity, reorder_level) VALUES (?, ?, ?)", // ✅ Fixed syntax
+        [name, quantity, reorder_level]
+      );
+      res.json({ message: "Item added", id: result.insertId });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   app.put("/items/:id", (req, res) => {
