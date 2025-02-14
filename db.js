@@ -23,7 +23,7 @@ async function connectDB() {
       password: process.env.PASSWORD,
       database: "defaultdb",
       ssl: {
-        ca: fs.readFileSync(caPath), // Provide the correct path to CA.pem
+        rejectUnauthorized: true, // Enable SSL
       },
     });
 
