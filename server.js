@@ -6,11 +6,31 @@ const connectDB = require("./db");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: "https://inventory-management-frontend-gamma-nine.vercel.app",
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
+};
+app.use(cors(corsOptions));
 const PORT = process.env.PORT || 80;
 
 async function startServer() {
   const db = await connectDB();
+  if (req.method === "OPTIONS") {
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "https://inventory-management-frontend-gamma-nine.vercel.app"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
+    return res.status(200).end();
+  }
   app.get("/users", async (req, res) => {
     try {
       const users = await db.query("SELECT * FROM users");
@@ -241,4 +261,4 @@ async function startServer() {
 
 startServer();
 
-module.exports = app; 
+module.exports = app;
